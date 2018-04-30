@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Mail\Booking;
 use App\Http\Requests\BookRequest;
 use Carbon\Carbon;
+use App\Http\Controllers\PaymentsController;
 
 class BookingController extends Controller
 {
@@ -20,6 +21,7 @@ class BookingController extends Controller
      */
     public function store(BookRequest $request)
     {
+      $payment = new PaymentsController();
       Book::create([
         'name' => request('name'),
         'email' => request('email'),
@@ -28,12 +30,16 @@ class BookingController extends Controller
         'date' => Carbon::parse(request('date')),
         'time' => Carbon::parse(request('time')),
       ]);
-      try {
-          $this->sendMail(request()->all());
-      } catch (\Exception $e) {
-          return back()->withFail('Sending Mail Failed, this is a problem with your internet connection, please try agin later');
-      }
-      return back()->withSuccess(" Thanks for booking with us, $request->name ");
+      return $payment->payment(request('name'), request('email'), request('phone'), request('article_id'));
+
+      // try {
+      //     $this->sendMail(request()->all());
+      //     // 
+      //     return dd('success');
+      // } catch (\Exception $e) {
+      //     return back()->withFail('Sending Mail Failed, this is a problem with your internet connection, please try agin later');
+      // }
+
     }
 
     public function sendMail($data)

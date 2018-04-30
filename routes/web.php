@@ -10,7 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Auth::routes();
 // Auth::routes();
 // Route::get('/home', 'HomeController@index')->name('home');
 
@@ -42,6 +42,15 @@ Route::group([
     CRUD::resource('accomodation', 'AccomodationCrudController');
     CRUD::resource('book', 'BookCrudController');
 });
+
+//pesapal routes
+Route::group(['prefix' => '/webhooks'], function () {
+    //PESAPAL
+    Route::get('donepayment', ['as' => 'paymentsuccess', 'uses'=>'PaymentsController@paymentsuccess']);
+    Route::get('paymentconfirmation', 'PaymentsController@paymentconfirmation');
+});
+
+Route::get('pay', 'PaymentsController@payment')->name('pay')->middleware('auth');
 
 
 
